@@ -18,6 +18,9 @@
 
 exports.handler = (event, context, callback) => {
   const request = event.Records[0].cf.request;
+  const querystring = require('querystring');
+
+  const params = querystring.parse(request.querystring);
 
   let prefixPath; // needed for 2nd condition
 
@@ -30,7 +33,7 @@ exports.handler = (event, context, callback) => {
       statusDescription: 'Found',
       headers: {
         location: [{
-          key: 'Location', value: prefixPath[1] + '/',
+          key: 'Location', value: prefixPath[1] + '/' + querystring.stringify(params),
         }],
       }
     };
@@ -41,7 +44,7 @@ exports.handler = (event, context, callback) => {
       statusDescription: 'Found',
       headers: {
         location: [{
-          key: 'Location', value: request.uri + '/',
+          key: 'Location', value: request.uri + '/' + querystring.stringify(params),
         }],
       }
     };

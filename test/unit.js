@@ -106,4 +106,38 @@ describe('Testing index.js', function() {
           || assert.strictEqual(data.headers.location[0].value, '/foo/'));
     });
   });
+
+  it('/foo?keywords=test -> internal redirect -> /foo/?keywords=test', function(done) {
+    const event = {
+      Records:[{ cf: {
+          request:  {
+            uri: '/foo',
+            querystring: '?keywords=test'
+          }
+        } }] };
+    index.handler(event, {}, (err, data) => {
+      done(
+        assert.strictEqual(data.status, '301') 
+        || assert.strictEqual(data.headers.location[0].key, 'Location')
+        || assert.strictEqual(data.headers.location[0].value, '/foo/%3Fkeywords=test')
+       );
+    });
+  });
+
+  it('/foo/index.html?keywords=test -> internal redirect -> /foo/?keywords=test', function(done) {
+    const event = {
+      Records:[{ cf: {
+          request:  {
+            uri: '/foo/index.html?keywords=test',
+            querystring: '?keywords=test'
+          }
+        } }] };
+    index.handler(event, {}, (err, data) => {
+      done(
+        assert.strictEqual(data.status, '301') 
+        || assert.strictEqual(data.headers.location[0].key, 'Location')
+        || assert.strictEqual(data.headers.location[0].value, '/foo/%3Fkeywords=test')
+       );
+    });
+  });
 });
